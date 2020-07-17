@@ -1,11 +1,11 @@
 import * as React from "react";
 import * as ReactDOM from "react-dom";
-import Confirm from "./tsConfirmation/Confirm"
+import TSConfirm from "./tsConfirmation/Confirm"
 import JSConfirm from "./jsConfirmation/JSConfirm";
 import {bridgeWith} from "./Bridge";
 
-let aComponent:JSX.Element = <Confirm title="Component A title"
-                       content="Component A content"/>;
+let aComponent:JSX.Element = <TSConfirm title="Title TS component"
+                       content="Content TS component"/>;
 
 let jsComponent = <JSConfirm title="Title JS component" content="Content JS component"/>;
 
