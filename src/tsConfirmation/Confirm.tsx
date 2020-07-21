@@ -1,11 +1,23 @@
 import * as React from "react"
 import {useState} from "react"
 import "./Confirm.css"
-import {BoxState, confirmKo, confirmOk} from "./domain/Confirm";
+import {BoxConfiguration, BoxState} from "./domain/Confirm";
 
-let Confirm: React.FunctionComponent<BoxState> = (props: BoxState) => {
-    const initialState:BoxState = {title:props.title,content:props.content,confirmState:"to_confirm"}
+let Confirm: React.FunctionComponent<BoxConfiguration> = (props: BoxConfiguration) => {
+    const initialState:BoxState = {title:props.box.title,content:props.box.content,confirmState:"to_confirm"}
     const [confirmState, setState] = useState(initialState);
+
+    let onClickOk = ()=>{
+        props.push({msg: "Clicked OK"})
+
+        setState(props.confirmOk(confirmState))
+    }
+
+    let onClickKo = ()=>{
+        props.push({msg: "Clicked Cancel"})
+
+        setState(props.confirmKo(confirmState))
+    }
 
     return <div className="confirm-wrapper confirm-visible">
         <div className="confirm-container">
@@ -16,9 +28,8 @@ let Confirm: React.FunctionComponent<BoxState> = (props: BoxState) => {
                 <p>{confirmState.content}</p>
             </div>
             <div className="confirm-buttons-container">
-                <button className="confirm-cancel" onClick={() => setState(confirmKo(confirmState))} >Cancel</button>
-
-                <button className="confirm-ok" onClick={() => setState(confirmOk(confirmState))}>Okay</button>
+                <button className="confirm-cancel" onClick={onClickKo}>Cancel</button>
+                <button className="confirm-ok" onClick={onClickOk}>Okay</button>
             </div>
         </div>
     </div>

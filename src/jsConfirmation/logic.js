@@ -1,4 +1,3 @@
-
-export function logic(msg) {
-    console.log(msg)
-}
+export let myJsHandler = ((e) => {
+    console.log(e)
+})
