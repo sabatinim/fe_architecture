@@ -3,10 +3,12 @@ import * as React from "react"
 export const JSConfirm = (props) => {
 
     function onOkclick() {
-        props.push({msg: "KO"})
+        props.push({msg: "Clicked OK"})
+        alert("Ok Clicked and OK event fired!")
     }
     function onCancelclick() {
-        props.push({msg: "KO"})
+        props.push({msg: "Clicked KO"})
+        alert("Cancel Clicked and Cancel event fired!")
     }
 
     return <div className="confirm-wrapper confirm-visible">

@@ -4,19 +4,17 @@ import "./Confirm.css"
 import {BoxConfiguration, BoxState} from "./domain/Confirm";
 
 let Confirm: React.FunctionComponent<BoxConfiguration> = (props: BoxConfiguration) => {
-    const initialState:BoxState = {title:props.box.title,content:props.box.content,confirmState:"to_confirm"}
-    const [confirmState, setState] = useState(initialState);
+    const initialState:BoxState = {title:props.box.title,content:props.box.content,confirmState:props.box.confirmState}
+    const [confirmState] = useState(initialState);
 
     let onClickOk = ()=>{
         props.push({msg: "Clicked OK"})
-
-        setState(props.confirmOk(confirmState))
+        alert("Ok Clicked and OK event fired!")
     }
 
     let onClickKo = ()=>{
         props.push({msg: "Clicked Cancel"})
-
-        setState(props.confirmKo(confirmState))
+        alert("Cancel Clicked and Cancel event fired!")
     }
 
     return <div className="confirm-wrapper confirm-visible">
@@ -34,7 +32,5 @@ let Confirm: React.FunctionComponent<BoxConfiguration> = (props: BoxConfiguratio
         </div>
     </div>
 }
-
 //Make Confirm public
 export default Confirm
-

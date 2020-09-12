@@ -3,31 +3,31 @@ import * as ReactDOM from "react-dom";
 import TSConfirm from "./tsConfirmation/Confirm"
 import JSConfirm from "./jsConfirmation/JSConfirm";
 import {bridgeWith} from "./Bridge";
-import {BoxConfiguration, BoxState, confirmKo, confirmOk} from "./tsConfirmation/domain/Confirm";
+import {BoxConfiguration} from "./tsConfirmation/domain/Confirm";
 import {MyEvent, push} from "./eventBus/EventBus";
-import {myJsHandler} from "./jsConfirmation/logic";
 
-let boxState: BoxState = {title: "Title TS component", content: "Content TS component", confirmState: "to_confirm"}
-
-let eventHandler = (e: MyEvent) => {
+//TS react component configuration
+const eventHandler = (e: MyEvent) => {
     console.log(e)
+
 }
-let boxConfig: BoxConfiguration =
-    {
-        box: boxState,
-        confirmOk: confirmOk,
-        confirmKo: confirmKo,
-        push: push(eventHandler)
-    }
+
+const boxConfig: BoxConfiguration = {
+    box: {title: "Title TS component", content: "Content TS component", confirmState: "to_confirm"},
+    push: push(eventHandler)
+}
 
 let aComponent: JSX.Element = <TSConfirm box={boxConfig.box}
-                                         confirmOk={boxConfig.confirmOk}
-                                         confirmKo={boxConfig.confirmKo}
                                          push={push(eventHandler)}/>;
+
+//Javascript react component configuration
+export const myJsHandler = ((e:any) => {
+    console.log(e)
+})
 
 let jsComponent = <JSConfirm title="Title JS component"
                              content="Content JS component"
-                             push={push(eventHandler)}/>;
+                             push={push(myJsHandler)}/>;
 
 let bridge: () => JSX.Element = bridgeWith(aComponent, jsComponent);
 
