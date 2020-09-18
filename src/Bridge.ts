@@ -1,9 +1,8 @@
-type ABTest = () => number;
-let getNumberFrom0and1: ABTest = () => Math.floor(Math.random() * 2) + 1;
+const ExecuteABTest = () => Math.floor(Math.random() * 2) + 1;
 
-export let bridgeWith = (aComponent: JSX.Element, anotherComponent: any): () => JSX.Element =>
+export const bridgeWith = (aComponent: JSX.Element, anotherComponent: any) =>
     () => {
-        if (getNumberFrom0and1() == 1) {
+        if (ExecuteABTest() == 1) {
             return aComponent
         } else
             return anotherComponent
