@@ -7,10 +7,7 @@ import {BoxConfiguration} from "./tsConfirmation/domain/Confirm";
 import {MyEvent, push} from "./eventBus/EventBus";
 
 //TS react component configuration
-const eventHandler = (e: MyEvent) => {
-    console.log(e)
-
-}
+const eventHandler = (e: MyEvent) => console.log(e)
 
 const boxConfig: BoxConfiguration = {
     box: {title: "Title TS component", content: "Content TS component", confirmState: "to_confirm"},
@@ -21,9 +18,7 @@ let aComponent: JSX.Element = <TSConfirm box={boxConfig.box}
                                          push={push(eventHandler)}/>;
 
 //Javascript react component configuration
-export const myJsHandler = ((e:any) => {
-    console.log(e)
-})
+export const myJsHandler = (e:any) => console.log(e)
 
 let jsComponent = <JSConfirm title="Title JS component"
                              content="Content JS component"
