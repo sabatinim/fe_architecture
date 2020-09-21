@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "webpack-dev-server --env development",
-    "build": "webpack --env production"
+    "start": "cp src/front_end/index.html dist/ && webpack-dev-server --env development",
+    "build": "webpack --env production",
+    "clean": "rm -rf dist/"
   },
   "author": "Marco Sabatini",
   "license": "ISC",
