@@ -10,8 +10,9 @@
     "noImplicitReturns": true,
     "rootDir": "src",
     "outDir": "dist",
-    "allowJs": true
+    "allowJs": true,
+    "esModuleInterop": true
   },
   "include": ["**/*.ts", "**/*.tsx","./src"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules","test"]
 }

@@ -1,7 +1,7 @@
 const path = require("path");
 
 module.exports = {
-    entry: "./src/front_end/index.tsx",
+    entry: "./src/index.tsx",
     module: {
         rules: [
             {
@@ -35,8 +35,13 @@ module.exports = {
         filename: "bundle.js"
     },
     devServer: {
-        contentBase: path.join(__dirname, "dist"),
-        compress: true,
-        port: 9000
-    }
+    static: {
+      directory: path.join(__dirname, "dist"),
+    },
+    port: 3000,
+    devMiddleware: {
+      publicPath: "https://localhost:3000/dist/",
+    },
+    hot: "only",
+  },
 };
