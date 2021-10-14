@@ -18,7 +18,7 @@ function render_button(b: Button) {
   return button;
 }
 
-function element_from(cell: Cell) {
+function render_cell(cell: Cell) {
   switch (cell.tag) {
     case "Cell":
       return document.createTextNode(cell.value)
@@ -46,7 +46,7 @@ export const renderTable = (t: Table, element: HTMLElement) => {
     row.forEach(cell => {
       let td = document.createElement("td")
 
-      td.append(element_from(cell))
+      td.append(render_cell(cell))
       tr.append(td)
     })
     tbody.append(tr)
