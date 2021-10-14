@@ -3,9 +3,15 @@ import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 let actual = document.createElement('div');
-// @ts-ignore
-document.getElementById("root").append(actual)
-let buttonBuilder = ButtonWith((event: any) => console.log(`Add Detail of ${event.target.value}`),"btn btn-outline-info")
+
+document.getElementById("table")?.append(actual)
+let buttonBuilder = ButtonWith(
+  (event: any) => {
+    // @ts-ignore
+    document.getElementById("detail")?.innerHTML = `<span>Add Detail of ${event.target.value}</span>`
+  },
+  "btn btn-outline-info"
+)
 
 renderTable(Table(
     "table table-hover",
