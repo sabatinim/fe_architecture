@@ -8,7 +8,7 @@ type Row = Cell[]
 type Rows = Row[]
 export type Table = { class: string, header: Header, rows: Rows }
 
-function render_button(b: Button) {
+function renderButton(b: Button) {
   let button = document.createElement("button")
   button.setAttribute("type", "button")
   button.setAttribute("class", b.css)
@@ -18,12 +18,12 @@ function render_button(b: Button) {
   return button;
 }
 
-function render_cell(cell: Cell) {
+function renderCell(cell: Cell) {
   switch (cell.tag) {
     case "Cell":
       return document.createTextNode(cell.value)
     case "Button":
-      return render_button(cell)
+      return renderButton(cell)
   }
 }
 
@@ -46,7 +46,7 @@ export const renderTable = (t: Table, element: HTMLElement) => {
     row.forEach(cell => {
       let td = document.createElement("td")
 
-      td.append(render_cell(cell))
+      td.append(renderCell(cell))
       tr.append(td)
     })
     tbody.append(tr)
