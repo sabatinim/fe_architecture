@@ -15,10 +15,10 @@ let buttonBuilder = ButtonWith(
 
 renderTable(Table(
     "table table-hover",
-    Header(Cell("aaa"), Cell("bbb"), Cell("ccc")),
+    Header(Cell("One"), Cell("Two"), Cell("ccc")),
     Rows(
-      Row(Cell("a"), Cell("b"), buttonBuilder("1")),
-      Row(Cell("c"), Cell("d"), buttonBuilder("2"))
+      Row(Cell("Marco"), Cell("Sabatini"), buttonBuilder("Details Marco")),
+      Row(Cell("Mario"), Cell("Rossi"), buttonBuilder("Details Mario"))
     )
   ),
   actual
