@@ -1,22 +1,12 @@
-//ADT
+import {Button, renderButton} from "./Button";
 
+//ADT
 type Header = CellString[]
-type Button = { value: string, func: any, css: string, tag: "Button" }
 type CellString = { value: string, tag: "Cell" }
 type Cell = CellString | Button
 type Row = Cell[]
 type Rows = Row[]
 export type Table = { class: string, header: Header, rows: Rows }
-
-function renderButton(b: Button) {
-  let button = document.createElement("button")
-  button.setAttribute("type", "button")
-  button.setAttribute("class", b.css)
-  button.value = b.value
-  button.append(document.createTextNode(b.value))
-  button.addEventListener("click", b.func)
-  return button;
-}
 
 function renderCell(cell: Cell) {
   switch (cell.tag) {
@@ -27,7 +17,7 @@ function renderCell(cell: Cell) {
   }
 }
 
-export const renderTable = (t: Table, element: HTMLElement) => {
+export const renderTable = (t: Table) => {
   let table = document.createElement("table")
   table.setAttribute("class", t.class)
 
@@ -55,7 +45,7 @@ export const renderTable = (t: Table, element: HTMLElement) => {
   thead.append(tr)
   table.append(thead)
   table.append(tbody)
-  element.append(table)
+  return table
 }
 
 export const Table = (c: string, h: Header, r: Rows): Table => ({class: c, header: h, rows: r})
@@ -63,5 +53,3 @@ export const Header = (...cols: CellString[]): Header => cols
 export const Rows = (...row: Row[]): Rows => row
 export const Row = (...cells: Cell[]): Row => cells
 export const Cell = (v: string): CellString => ({value: v, tag: "Cell"})
-export const ButtonWith = (callBack: (event: any) => void, css: string) =>
-  (value: string): Button => ({value: value, func: callBack, css: css, tag: "Button"})

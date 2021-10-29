@@ -1,10 +1,9 @@
-import {ButtonWith, Cell, Header, renderTable, Row, Rows, Table} from "../src/view/Table";
+import {Cell, Header, renderTable, Row, Rows, Table} from "../src/view/Table";
+import {ButtonWith} from "../src/view/Button";
 
 describe('Table rendering', function () {
 
   it('should render table data rows', function () {
-    let actual = document.createElement('div');
-
     let model = Table("ddd",
       Header(Cell("aaa"), Cell("bbb"), Cell("ccc")),
       Rows(
@@ -13,7 +12,7 @@ describe('Table rendering', function () {
       )
     );
 
-    renderTable(model, actual)
+    let actual = renderTable(model)
 
     expect(actual.outerHTML).toContain('<table class="ddd">')
     expect(actual.outerHTML).toContain("<tr><th>aaa</th><th>bbb</th><th>ccc</th></tr>")
@@ -22,27 +21,24 @@ describe('Table rendering', function () {
   });
 
   it('should trigger item click event', function () {
-    let actual = document.createElement('div');
-
     let clicked = "---"
 
     let Button = ButtonWith((event: any) => {
-      clicked = event.target.value
-    },"sss");
+      clicked = event.props
+    }, "sss", "cccc");
 
-    renderTable(
+    let actual = renderTable(
       Table("ddd",
         Header(Cell("aaa")),
         Rows(
-          Row(Button("cccc"))
+          Row(Button({id: 123, other: "value"}))
         )
-      ),
-      actual
+      )
     )
 
     expect(actual.outerHTML).toContain(`<tr><td><button type="button" class="sss" value="cccc">cccc</button></td></tr>`)
 
     actual.getElementsByTagName("button")[0].click()
-    expect(clicked).toEqual("cccc")
+    expect(clicked).toEqual({id: 123, other: "value"})
   });
 });

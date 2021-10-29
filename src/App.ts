@@ -1,25 +1,33 @@
-import {ButtonWith, Cell, Header, renderTable, Row, Rows, Table} from "./view/Table";
+import {Cell, Header, renderTable, Row, Rows, Table} from "./view/Table";
 import 'bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import {ButtonWith} from "./view/Button";
 
-let actual = document.createElement('div');
 
-document.getElementById("table")?.append(actual)
 let buttonBuilder = ButtonWith(
   (event: any) => {
     // @ts-ignore
-    document.getElementById("detail")?.innerHTML = `<span>Add Detail of ${event.target.value}</span>`
+    document.getElementById("detail")?.innerHTML =
+      `</br><span>Person: ${event.props["name"]} - ${event.props["surname"]}</br>Address: ${event.props["address"]}</span>`
   },
-  "btn btn-outline-info"
+  "btn btn-outline-info", "Detail"
 )
 
-renderTable(Table(
-    "table table-hover",
-    Header(Cell("One"), Cell("Two"), Cell("ccc")),
-    Rows(
-      Row(Cell("Marco"), Cell("Sabatini"), buttonBuilder("Details Marco")),
-      Row(Cell("Mario"), Cell("Rossi"), buttonBuilder("Details Mario"))
-    )
-  ),
-  actual
-)
+let tableModel = Table(
+  "table table-hover",
+  Header(Cell("Name"), Cell("Surname"), Cell("Actions")),
+  Rows(
+    Row(Cell("Marco"), Cell("Sabatini"), buttonBuilder({
+      name: "Marco",
+      surname: "Sabatini",
+      address: "Rocket Square, 1"
+    })),
+    Row(Cell("Mario"), Cell("Rossi"), buttonBuilder({
+      name: "Mario",
+      surname: "Rossi",
+      address: "Rocket Square, 2"
+    }))
+  )
+);
+
+document.getElementById("table")?.append(renderTable(tableModel))
