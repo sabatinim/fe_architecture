@@ -1,3 +1,6 @@
+## Build
+![CI](https://github.com/sabatinim/fe_architecture/actions/workflows/main.yml/badge.svg)
+
 ### Scope
 Create HTML custom component using functional programming and DOM Api.
 
