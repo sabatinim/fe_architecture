@@ -21,6 +21,8 @@ export const renderTable = (t: Table) => {
   let table = document.createElement("table")
   table.setAttribute("class", t.class)
 
+  Promise
+
   let thead = table.createTHead()
   let tr = document.createElement("tr")
   t.header.forEach(h => {
