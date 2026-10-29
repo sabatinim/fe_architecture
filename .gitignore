@@ -82,6 +82,7 @@ typings/
 .nuxt
 dist
 dist-test
+web-dist
 
 # Gatsby files
 .cache/
