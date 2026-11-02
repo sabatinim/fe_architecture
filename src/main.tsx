@@ -2,13 +2,12 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider, createTheme } from "@mui/material/styles";
-import App from "./App.js";
+import SearchInput from "./search/infrastructure/ui/searchInput.js";
+import { createSearch } from "./search/factory.js";
 
 const rootElement = document.getElementById("root");
+const search = createSearch();
 
-if (!rootElement) {
-  throw new Error('Missing root element with id "root".');
-}
 
 const theme = createTheme({
   palette: {
@@ -22,11 +21,11 @@ const theme = createTheme({
   shape: { borderRadius: 10 },
 });
 
-createRoot(rootElement).render(
+createRoot(rootElement!).render(
   <StrictMode>
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <App />
+      <SearchInput search={search} />
     </ThemeProvider>
   </StrictMode>,
 );

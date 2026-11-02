@@ -29,6 +29,7 @@ export class EventBus<Events extends object> {
 
 export interface AppEvents {
   messageSent: { message: string };
+  searchExecuted: { query: string; results: any};
 }
 
 export const eventBus = new EventBus<AppEvents>();
