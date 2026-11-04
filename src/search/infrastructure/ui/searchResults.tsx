@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import {
     Paper,
     Table,
@@ -10,7 +10,7 @@ import {
     Typography,
     Alert
 } from "@mui/material";
-import { Products } from "../../domain/productSearchRepository.js";
+import type { Products } from "../../domain/productSearchRepository.js";
 import { Search } from "../../service/search.js";
 import { useSubscription } from "../../../shared/useSubscription.js";
 
@@ -18,38 +18,45 @@ interface SearchResultsProps {
     search: Search;
 }
 
+type SearchResultsState =
+    | { status: "idle" }
+    | { status: "empty" }
+    | { status: "success"; results: Products }
+    | { status: "error"; message: string };
+
 export default function SearchResults({ search }: SearchResultsProps) {
-    const [results, setResults] = useState<Products>(Products.empty());
-    const [searchError, setSearchError] = useState<string | null>(null);
+    const [state, setState] = useState<SearchResultsState>({ status: "idle" });
 
     useSubscription(() => {
         return search.subscribe("searchExecuted", (event) => {
-            setSearchError(null);
-            setResults(event.results);
+            const products: Products = event.results;
+
+            setState(products.isEmpty()
+                ? { status: "empty" }
+                : { status: "success", results: event.results });
         });
     }, [search]);
 
     useSubscription(() => {
         return search.subscribe("searchFailed", (event) => {
-            setResults(Products.empty());
-            setSearchError(event.error.message);
+            setState({ status: "error", message: event.error.message });
         });
     }, [search]);
 
-    return (
-        <>
-            {searchError !== null && (
-                <Alert severity="error" role="alert">
-                    {searchError}
-                </Alert>
-            )}
-            {results.isEmpty() ? (
-                searchError === null && (
-                    <Typography role="status" color="text.secondary" sx={{ textAlign: "center" }}>
-                        No products found.
-                    </Typography>
-                )
-            ) : (
+    let content: ReactNode;
+    switch (state.status) {
+        case "idle":
+            content = null;
+            break;
+        case "empty":
+            content = (
+                <Typography role="status" color="text.secondary" sx={{ textAlign: "center" }}>
+                    No products found.
+                </Typography>
+            );
+            break;
+        case "success":
+            content = (
                 <TableContainer
                     component={Paper}
                     sx={{ borderRadius: 3, boxShadow: "0 6px 24px rgba(27, 47, 37, 0.06)" }}
@@ -64,7 +71,7 @@ export default function SearchResults({ search }: SearchResultsProps) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {results.items.map((product) => (
+                            {state.results.items.map((product) => (
                                 <TableRow key={product.id}>
                                     <TableCell>{product.id}</TableCell>
                                     <TableCell>{product.name}</TableCell>
@@ -75,7 +82,16 @@ export default function SearchResults({ search }: SearchResultsProps) {
                         </TableBody>
                     </Table>
                 </TableContainer>
-            )}
-        </>
-    );
+            );
+            break;
+        case "error":
+            content = (
+                <Alert severity="error" role="alert">
+                    {state.message}
+                </Alert>
+            );
+            break;
+    }
+
+    return (<>{content}</>);
 }

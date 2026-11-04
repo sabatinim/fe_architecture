@@ -5,6 +5,15 @@ import { Product } from "./domain/productSearchRepository.js";
 
 
 export function createSearch(): Search {
-  const p = new Product("1", "Product 1", 19.99, "A simple product");
-  return new Search(new InMemoryProductSearchRepository([p]), eventBus);
+  const products = Array.from({ length: 10 }, (_, index) => {
+    const number = index + 1;
+    return new Product(
+      String(number),
+      `Product ${number}`,
+      Number((number * 9.99).toFixed(2)),
+      `Description for product ${number}`,
+    );
+  });
+
+  return new Search(new InMemoryProductSearchRepository(products), eventBus);
 }
