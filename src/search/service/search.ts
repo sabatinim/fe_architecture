@@ -23,7 +23,8 @@ export class Search {
             this.eventBus.emit("searchExecuted", { query, results });
             return Promise.resolve(results);
         }).catch((error) => {
+            this.eventBus.emit("searchFailed", { query, error });
             return Promise.reject(error);
-    });   
+    });
     }
 }

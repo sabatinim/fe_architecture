@@ -26,23 +26,16 @@ interface SearchInputProps {
 export default function SearchInput({ search }: SearchInputProps) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<Products>(Products.empty());
-  const [searchError, setSearchError] = useState<string | null>(null);
-
+  
   useEffect(() => {
     if (query.trim().length < 4) {
       setLoading(false);
-      setSearchError(null);
       return;
     }
 
     setLoading(true);
-    setSearchError(null);
 
-    search.execute(query)
-      .then((searchResults) => {setResults(searchResults)})
-      .catch((error: Error) => {setSearchError(error.message)})
-      .finally(() => {setLoading(false)});
+    search.execute(query).catch(() => {}).finally(() => {setLoading(false)});
 
   }, [query, search]);
 
@@ -108,11 +101,6 @@ export default function SearchInput({ search }: SearchInputProps) {
             },
           }}
         />
-        {searchError !== null && (
-          <Alert severity="error" role="alert">
-            {searchError}
-          </Alert>
-        )}
         <SearchResults search={search} />
       </Box>
     </Box>

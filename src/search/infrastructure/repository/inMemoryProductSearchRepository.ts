@@ -15,7 +15,6 @@ export class InMemoryProductSearchRepository implements ProductSearchRepository 
         () => {
           if (query === "aaaa") {
             reject(new Error('Search failed for query "aaaa".'));
-            return;
           }
 
           resolve(new Products(this.products));

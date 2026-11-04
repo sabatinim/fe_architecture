@@ -1,5 +1,5 @@
 type Listener<Payload> = (payload: Payload) => void;
-type Unsubscribe = () => void;
+export type Unsubscribe = () => void;
 type ListenerMap<Events extends object> = {
   [Event in keyof Events]?: Set<Listener<Events[Event]>>;
 };
@@ -30,6 +30,7 @@ export class EventBus<Events extends object> {
 export interface AppEvents {
   messageSent: { message: string };
   searchExecuted: { query: string; results: any};
+  searchFailed: { query: string; error: Error };
 }
 
 export const eventBus = new EventBus<AppEvents>();
