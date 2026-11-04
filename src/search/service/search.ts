@@ -10,8 +10,11 @@ export class Search {
     this.eventBus = eventBus;
   }
 
-  subscribe(listener: (event: AppEvents["searchExecuted"]) => void): () => void {
-    return this.eventBus.on("searchExecuted", listener);
+  subscribe<K extends keyof AppEvents>(
+    event: K, 
+    listener: (data: AppEvents[K]) => void
+  ): () => void {
+    return this.eventBus.on(event, listener);
   }
 
   async execute(query: string): Promise<Products> {

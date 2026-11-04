@@ -15,7 +15,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import type { Product } from "../../domain/productSearchRepository.js";
+import { Products } from "../../domain/productSearchRepository.js";
 import type { Search } from "../../service/search.js";
 import SearchResults from "./searchResults.js";
 
@@ -26,23 +26,21 @@ interface SearchInputProps {
 export default function SearchInput({ search }: SearchInputProps) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<readonly Product[] | null>(null);
+  const [results, setResults] = useState<Products>(Products.empty());
   const [searchError, setSearchError] = useState<string | null>(null);
 
   useEffect(() => {
     if (query.trim().length < 4) {
       setLoading(false);
-      setResults(null);
       setSearchError(null);
       return;
     }
 
     setLoading(true);
-    setResults(null);
     setSearchError(null);
 
     search.execute(query)
-      .then((searchResults) => {setResults(searchResults.items)})
+      .then((searchResults) => {setResults(searchResults)})
       .catch((error: Error) => {setSearchError(error.message)})
       .finally(() => {setLoading(false)});
 

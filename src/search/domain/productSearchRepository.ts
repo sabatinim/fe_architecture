@@ -8,10 +8,21 @@ export class Product {
 }
 
 export class Products {
-  constructor(private readonly products: Product[]) {}
+  private readonly products: Product[];
+  constructor(products: Product[] = []) {
+    this.products = products;
+  }
 
   get items(): readonly Product[] {
     return this.products;
+  }
+
+  isEmpty(): boolean {
+    return this.products.length === 0;
+  }
+
+  static empty(): Products {
+    return new Products([]);
   }
 }
 

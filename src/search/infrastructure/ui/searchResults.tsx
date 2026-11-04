@@ -9,28 +9,22 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
-import type { Product } from "../../domain/productSearchRepository.js";
-import type { Search } from "../../service/search.js";
+import { Products } from "../../domain/productSearchRepository.js";
+import { Search } from "../../service/search.js";
 
 interface SearchResultsProps {
   search: Search;
 }
 
 export default function SearchResults({ search }: SearchResultsProps) {
-  const [results, setResults] = useState<readonly Product[] | null>(null);
+  const [results, setResults] = useState<Products>(Products.empty());
 
   useEffect(() => {
-    return search.subscribe((event) => {
-    console.log("Search executed:", event.query, event.results);
-      setResults(event.results);
-    });
+    return search.subscribe("searchExecuted", (event) => {setResults(event.results)});
   }, [search]);
 
-  if (results === null) {
-    return null;
-  }
 
-  if (results.length === 0) {
+  if (results && results.isEmpty()) {
     return (
       <Typography role="status" color="text.secondary" sx={{ textAlign: "center" }}>
         No products found.
