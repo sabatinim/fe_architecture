@@ -17,6 +17,7 @@ import {
 } from "@mui/material";
 import type { Product } from "../../domain/productSearchRepository.js";
 import type { Search } from "../../service/search.js";
+import SearchResults from "./searchResults.js";
 
 interface SearchInputProps {
   search: Search;
@@ -27,10 +28,8 @@ export default function SearchInput({ search }: SearchInputProps) {
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<readonly Product[] | null>(null);
   const [searchError, setSearchError] = useState<string | null>(null);
-  const latestRequest = useRef(0);
 
   useEffect(() => {
-    const requestId = ++latestRequest.current;
     if (query.trim().length < 4) {
       setLoading(false);
       setResults(null);
@@ -43,33 +42,12 @@ export default function SearchInput({ search }: SearchInputProps) {
     setSearchError(null);
 
     search.execute(query)
-      .then((searchResults) => {
-        if (requestId === latestRequest.current) {
-          setResults(searchResults.items);
-        }
-      })
-      .catch((error: unknown) => {
-        if (requestId === latestRequest.current) {
-          setSearchError(error instanceof Error ? error.message : "Search failed.");
-        }
-      })
-      .finally(() => {
-        if (requestId === latestRequest.current) {
-          setLoading(false);
-        }
-      });
+      .then((searchResults) => {setResults(searchResults.items)})
+      .catch((error: Error) => {setSearchError(error.message)})
+      .finally(() => {setLoading(false)});
 
   }, [query, search]);
 
-  useEffect(() => {
-    const unsubscribe = search.subscribe((event) => {
-      console.log("Search executed:", event.query, event.results);
-    });
-
-    return () => {
-      unsubscribe();
-    };
-  }, [search]);
 
   function handleSearch(event: ChangeEvent<HTMLInputElement>) {
     setQuery(event.target.value);
@@ -137,36 +115,7 @@ export default function SearchInput({ search }: SearchInputProps) {
             {searchError}
           </Alert>
         )}
-        {results !== null && (
-          results.length > 0 ? (
-            <TableContainer component={Paper} sx={{ borderRadius: 3, boxShadow: "0 6px 24px rgba(27, 47, 37, 0.06)" }}>
-              <Table aria-label="Search results">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>ID</TableCell>
-                    <TableCell>Name</TableCell>
-                    <TableCell align="right">Price</TableCell>
-                    <TableCell>Description</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {results.map((product) => (
-                    <TableRow key={product.id}>
-                      <TableCell>{product.id}</TableCell>
-                      <TableCell>{product.name}</TableCell>
-                      <TableCell align="right">{product.price.toFixed(2)}</TableCell>
-                      <TableCell>{product.description}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
-          ) : (
-            <Typography role="status" color="text.secondary" sx={{ textAlign: "center" }}>
-              No products found.
-            </Typography>
-          )
-        )}
+        <SearchResults search={search} />
       </Box>
     </Box>
   );

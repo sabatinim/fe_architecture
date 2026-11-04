@@ -21,6 +21,6 @@ export class Search {
             return Promise.resolve(results);
         }).catch((error) => {
             return Promise.reject(error);
-        });   
+    });   
     }
 }
