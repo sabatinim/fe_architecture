@@ -16,35 +16,51 @@ import { useSubscription } from "../../../shared/useSubscription.js";
 
 interface SearchResultsProps {
     search: Search;
+    query: string;
 }
 
 type SearchResultsState =
     | { status: "idle" }
-    | { status: "empty" }
-    | { status: "success"; results: Products }
-    | { status: "error"; message: string };
+    | { status: "empty"; query: string }
+    | { status: "success"; query: string; results: Products }
+    | { status: "error"; query: string; message: string };
 
-export default function SearchResults({ search }: SearchResultsProps) {
+export default function SearchResults({ search, query }: SearchResultsProps) {
     const [state, setState] = useState<SearchResultsState>({ status: "idle" });
+
+    useEffect(() => {
+        setState({ status: "idle" });
+    }, [query]);
 
     useSubscription(() => {
         return search.subscribe("searchExecuted", (event) => {
+            if (event.query !== query) {
+                return;
+            }
+
             const products: Products = event.results;
 
             setState(products.isEmpty()
-                ? { status: "empty" }
-                : { status: "success", results: event.results });
+                ? { status: "empty", query }
+                : { status: "success", query, results: event.results });
         });
-    }, [search]);
+    }, [search, query]);
 
     useSubscription(() => {
         return search.subscribe("searchFailed", (event) => {
-            setState({ status: "error", message: event.error.message });
+            if (event.query === query) {
+                setState({ status: "error", query, message: event.error.message });
+            }
         });
-    }, [search]);
+    }, [search, query]);
 
     let content: ReactNode;
-    switch (state.status) {
+    const visibleState =
+        state.status !== "idle" && state.query !== query
+            ? { status: "idle" as const }
+            : state;
+
+    switch (visibleState.status) {
         case "idle":
             content = null;
             break;
@@ -71,7 +87,7 @@ export default function SearchResults({ search }: SearchResultsProps) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {state.results.items.map((product) => (
+                            {visibleState.results.items.map((product) => (
                                 <TableRow key={product.id}>
                                     <TableCell>{product.id}</TableCell>
                                     <TableCell>{product.name}</TableCell>
@@ -87,7 +103,7 @@ export default function SearchResults({ search }: SearchResultsProps) {
         case "error":
             content = (
                 <Alert severity="error" role="alert">
-                    {state.message}
+                    {visibleState.message}
                 </Alert>
             );
             break;

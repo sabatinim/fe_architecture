@@ -1,21 +1,11 @@
-import { useEffect, useRef, useState, type ChangeEvent } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import SearchRounded from "@mui/icons-material/SearchRounded";
 import {
-  Alert,
   Box,
   CircularProgress,
   InputAdornment,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
   TextField,
-  Typography,
 } from "@mui/material";
-import { Products } from "../../domain/productSearchRepository.js";
 import type { Search } from "../../service/search.js";
 import SearchResults from "./searchResults.js";
 
@@ -51,14 +41,25 @@ export default function SearchInput({ search }: SearchInputProps) {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        minHeight: "100vh",
+        justifyContent: "flex-start",
         bgcolor: "#f7f8fa",
         px: 2,
-        py: 6,
+        pb: 6,
       }}
     >
-      <Box sx={{ width: "100%", maxWidth: 900, display: "flex", flexDirection: "column", gap: 3 }}>
+      <Box
+        sx={{
+          position: "sticky",
+          top: 0,
+          zIndex: (theme) => theme.zIndex.appBar,
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          bgcolor: "#f7f8fa",
+          pt: 3,
+          pb: 2,
+        }}
+      >
         <TextField
           fullWidth
           value={query}
@@ -101,7 +102,9 @@ export default function SearchInput({ search }: SearchInputProps) {
             },
           }}
         />
-        <SearchResults search={search} />
+      </Box>
+      <Box sx={{ width: "100%", maxWidth: 900 }}>
+        <SearchResults search={search} query={query} />
       </Box>
     </Box>
   );

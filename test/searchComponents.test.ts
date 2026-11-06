@@ -61,7 +61,11 @@ function createProducts(): Products {
 
 async function withRenderedComponent(
   render: (search: ManualSearch) => ReturnType<typeof createElement>,
-  verify: (container: HTMLElement, search: ManualSearch) => Promise<void>,
+  verify: (
+    container: HTMLElement,
+    search: ManualSearch,
+    rerender: (element: ReturnType<typeof createElement>) => Promise<void>,
+  ) => Promise<void>,
 ): Promise<void> {
   const container = document.createElement("div");
   document.body.append(container);
@@ -72,7 +76,11 @@ async function withRenderedComponent(
     await act(async () => {
       root.render(render(search));
     });
-    await verify(container, search);
+    await verify(container, search, async (element) => {
+      await act(async () => {
+        root.render(element);
+      });
+    });
   } finally {
     await act(async () => {
       root.unmount();
@@ -112,7 +120,7 @@ test("SearchInput shows validation for short queries and executes valid queries"
 
 test("SearchResults renders products from searchExecuted", async () => {
   await withRenderedComponent(
-    (search) => createElement(SearchResults, { search }),
+    (search) => createElement(SearchResults, { search, query: "keyboard" }),
     async (container, mountedSearch) => {
       await act(async () => {
         mountedSearch.emit("searchExecuted", {
@@ -130,7 +138,7 @@ test("SearchResults renders products from searchExecuted", async () => {
 
 test("SearchResults renders empty and error states from their events", async () => {
   await withRenderedComponent(
-    (search) => createElement(SearchResults, { search }),
+    (search) => createElement(SearchResults, { search, query: "missing" }),
     async (container, mountedSearch) => {
       await act(async () => {
         mountedSearch.emit("searchExecuted", {
@@ -142,11 +150,37 @@ test("SearchResults renders empty and error states from their events", async () 
 
       await act(async () => {
         mountedSearch.emit("searchFailed", {
-          query: "keyboard",
+          query: "missing",
           error: new Error("Search is unavailable"),
         });
       });
       assert.match(container.textContent ?? "", /Search is unavailable/);
+    },
+  );
+});
+
+test("SearchResults clears and ignores results when the query changes", async () => {
+  await withRenderedComponent(
+    (search) => createElement(SearchResults, { search, query: "keyboard" }),
+    async (container, mountedSearch, rerender) => {
+      await act(async () => {
+        mountedSearch.emit("searchExecuted", {
+          query: "keyboard",
+          results: createProducts(),
+        });
+      });
+      assert.match(container.textContent ?? "", /Keyboard/);
+
+      await rerender(createElement(SearchResults, { search: mountedSearch, query: "key" }));
+      assert.doesNotMatch(container.textContent ?? "", /Keyboard/);
+
+      await act(async () => {
+        mountedSearch.emit("searchFailed", {
+          query: "keyboard",
+          error: new Error("Stale search error"),
+        });
+      });
+      assert.doesNotMatch(container.textContent ?? "", /Stale search error/);
     },
   );
 });
