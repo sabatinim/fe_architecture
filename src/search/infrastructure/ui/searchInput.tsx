@@ -2,7 +2,6 @@ import { useEffect, useState, type ChangeEvent } from "react";
 import SearchRounded from "@mui/icons-material/SearchRounded";
 import {
   Box,
-  CircularProgress,
   InputAdornment,
   TextField,
 } from "@mui/material";
@@ -15,23 +14,21 @@ interface SearchInputProps {
 
 export default function SearchInput({ search }: SearchInputProps) {
   const [query, setQuery] = useState("");
-  const [loading, setLoading] = useState(false);
   
   useEffect(() => {
     if (query.trim().length < 4) {
-      setLoading(false);
       return;
     }
 
-    setLoading(true);
-
-    search.execute(query).catch(() => {}).finally(() => {setLoading(false)});
+    search.execute(query).catch(() => {});
 
   }, [query, search]);
 
 
   function handleSearch(event: ChangeEvent<HTMLInputElement>) {
-    setQuery(event.target.value);
+    const nextQuery = event.target.value;
+    search.queryChanged(nextQuery);
+    setQuery(nextQuery);
   }
 
   return (
@@ -92,11 +89,7 @@ export default function SearchInput({ search }: SearchInputProps) {
             input: {
               startAdornment: (
                 <InputAdornment position="start">
-                  {loading ? (
-                    <CircularProgress size={20} aria-label="Loading search" />
-                  ) : (
-                    <SearchRounded sx={{ color: "#668072" }} />
-                  )}
+                  <SearchRounded sx={{ color: "#668072" }} />
                 </InputAdornment>
               ),
             },
@@ -104,7 +97,7 @@ export default function SearchInput({ search }: SearchInputProps) {
         />
       </Box>
       <Box sx={{ width: "100%", maxWidth: 900 }}>
-        <SearchResults search={search} query={query} />
+        <SearchResults search={search} />
       </Box>
     </Box>
   );

@@ -17,6 +17,10 @@ export class Search {
     return this.eventBus.on(event, listener);
   }
 
+  queryChanged(query: string): void {
+    this.eventBus.emit("searchQueryChanged", { query });
+  }
+
   async execute(query: string): Promise<Products> {
     return this.searchRepository.search(query)
         .then((results) => { 

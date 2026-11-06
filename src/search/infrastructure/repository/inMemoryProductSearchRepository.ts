@@ -16,8 +16,12 @@ export class InMemoryProductSearchRepository implements ProductSearchRepository 
           if (query === "aaaa") {
             reject(new Error('Search failed for query "aaaa".'));
           }
+          
+          const filteredProducts = this.products.filter(
+            product => product.name.toLowerCase().includes(query.toLowerCase())
+          );
 
-          resolve(new Products(this.products));
+          resolve(new Products(filteredProducts));
         },
         timeout
       )

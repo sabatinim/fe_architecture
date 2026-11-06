@@ -120,8 +120,13 @@ test("SearchInput shows validation for short queries and executes valid queries"
 
 test("SearchResults renders products from searchExecuted", async () => {
   await withRenderedComponent(
-    (search) => createElement(SearchResults, { search, query: "keyboard" }),
+    (search) => createElement(SearchResults, { search }),
     async (container, mountedSearch) => {
+      await act(async () => {
+        mountedSearch.queryChanged("keyboard");
+      });
+      assert.ok(container.querySelector('[aria-label="Loading search results"]'));
+
       await act(async () => {
         mountedSearch.emit("searchExecuted", {
           query: "keyboard",
@@ -138,9 +143,10 @@ test("SearchResults renders products from searchExecuted", async () => {
 
 test("SearchResults renders empty and error states from their events", async () => {
   await withRenderedComponent(
-    (search) => createElement(SearchResults, { search, query: "missing" }),
+    (search) => createElement(SearchResults, { search }),
     async (container, mountedSearch) => {
       await act(async () => {
+        mountedSearch.queryChanged("missing");
         mountedSearch.emit("searchExecuted", {
           query: "missing",
           results: Products.empty(),
@@ -161,9 +167,10 @@ test("SearchResults renders empty and error states from their events", async () 
 
 test("SearchResults clears and ignores results when the query changes", async () => {
   await withRenderedComponent(
-    (search) => createElement(SearchResults, { search, query: "keyboard" }),
-    async (container, mountedSearch, rerender) => {
+    (search) => createElement(SearchResults, { search }),
+    async (container, mountedSearch) => {
       await act(async () => {
+        mountedSearch.queryChanged("keyboard");
         mountedSearch.emit("searchExecuted", {
           query: "keyboard",
           results: createProducts(),
@@ -171,7 +178,9 @@ test("SearchResults clears and ignores results when the query changes", async ()
       });
       assert.match(container.textContent ?? "", /Keyboard/);
 
-      await rerender(createElement(SearchResults, { search: mountedSearch, query: "key" }));
+      await act(async () => {
+        mountedSearch.queryChanged("key");
+      });
       assert.doesNotMatch(container.textContent ?? "", /Keyboard/);
 
       await act(async () => {

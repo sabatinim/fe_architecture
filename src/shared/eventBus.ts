@@ -29,6 +29,7 @@ export class EventBus<Events extends object> {
 
 export interface AppEvents {
   messageSent: { message: string };
+  searchQueryChanged: { query: string };
   searchExecuted: { query: string; results: any};
   searchFailed: { query: string; error: Error };
 }

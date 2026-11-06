@@ -1,5 +1,7 @@
-import { useEffect, useState, type ReactNode } from "react";
+import { useRef, useState, type ReactNode } from "react";
 import {
+    Box,
+    CircularProgress,
     Paper,
     Table,
     TableBody,
@@ -16,53 +18,59 @@ import { useSubscription } from "../../../shared/useSubscription.js";
 
 interface SearchResultsProps {
     search: Search;
-    query: string;
 }
 
 type SearchResultsState =
     | { status: "idle" }
-    | { status: "empty"; query: string }
-    | { status: "success"; query: string; results: Products }
-    | { status: "error"; query: string; message: string };
+    | { status: "loading" }
+    | { status: "empty" }
+    | { status: "success"; results: Products }
+    | { status: "error"; message: string };
 
-export default function SearchResults({ search, query }: SearchResultsProps) {
+export default function SearchResults({ search }: SearchResultsProps) {
     const [state, setState] = useState<SearchResultsState>({ status: "idle" });
+    const activeQuery = useRef<string | undefined>(undefined);
 
-    useEffect(() => {
-        setState({ status: "idle" });
-    }, [query]);
+    useSubscription(() => {
+        return search.subscribe("searchQueryChanged", (event) => {
+            activeQuery.current = event.query;
+            setState(event.query.trim().length >= 4 ? { status: "loading" } : { status: "idle" });
+        });
+    }, [search]);
 
     useSubscription(() => {
         return search.subscribe("searchExecuted", (event) => {
-            if (event.query !== query) {
+            if (event.query !== activeQuery.current) {
                 return;
             }
 
             const products: Products = event.results;
 
             setState(products.isEmpty()
-                ? { status: "empty", query }
-                : { status: "success", query, results: event.results });
+                ? { status: "empty" }
+                : { status: "success", results: event.results });
         });
-    }, [search, query]);
+    }, [search]);
 
     useSubscription(() => {
         return search.subscribe("searchFailed", (event) => {
-            if (event.query === query) {
-                setState({ status: "error", query, message: event.error.message });
+            if (event.query === activeQuery.current) {
+                setState({ status: "error", message: event.error.message });
             }
         });
-    }, [search, query]);
+    }, [search]);
 
     let content: ReactNode;
-    const visibleState =
-        state.status !== "idle" && state.query !== query
-            ? { status: "idle" as const }
-            : state;
-
-    switch (visibleState.status) {
+    switch (state.status) {
         case "idle":
             content = null;
+            break;
+        case "loading":
+            content = (
+                <Box role="status" sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+                    <CircularProgress aria-label="Loading search results" />
+                </Box>
+            );
             break;
         case "empty":
             content = (
@@ -87,7 +95,7 @@ export default function SearchResults({ search, query }: SearchResultsProps) {
                             </TableRow>
                         </TableHead>
                         <TableBody>
-                            {visibleState.results.items.map((product) => (
+                            {state.results.items.map((product) => (
                                 <TableRow key={product.id}>
                                     <TableCell>{product.id}</TableCell>
                                     <TableCell>{product.name}</TableCell>
@@ -103,7 +111,7 @@ export default function SearchResults({ search, query }: SearchResultsProps) {
         case "error":
             content = (
                 <Alert severity="error" role="alert">
-                    {visibleState.message}
+                    {state.message}
                 </Alert>
             );
             break;
